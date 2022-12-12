@@ -12,25 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cli
+package language
 
 import (
 	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 
 	e2e "github.com/tensorchord/envd/e2e/v1"
 )
 
-var _ = Describe("e2e quickstart", Ordered, func() {
-	exampleName := "quick-start"
-	testcase := "e2e"
-	e := e2e.NewExample(e2e.BuildContextDirWithName(exampleName), testcase)
-	BeforeAll(e.BuildImage(true, "v1-quick-start-e2e"))
-	BeforeEach(e.RunContainer())
-	It("execute python demo.py", func() {
-		res, err := e.Exec("python demo.py")
-		Expect(err).To(BeNil())
-		Expect(res).To(Equal("[2 3 4]"))
+var _ = Describe("python", Ordered, func() {
+	It("Should build requirements successfully", func() {
+		exampleName := "python/requirements"
+		testcase := "e2e"
+		e := e2e.NewExample(e2e.BuildContextDirWithName(exampleName), testcase)
+		e.BuildImage(false, "v1-python-requirements")()
+		e.RunContainer()()
+		e.DestroyContainer()()
 	})
-	AfterEach(e.DestroyContainer())
 })

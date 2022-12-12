@@ -22,6 +22,6 @@ import (
 
 var _ = Describe("check GPU examples in documentation", Ordered, func() {
 	e := e2e.NewExample(e2e.BuildContextDirWithName("complex"), "e2e-doc")
-	It("should be able to build the GPU example", e.BuildImage(true))
+	It("should be able to build the GPU example", e.BuildImage(false, "v0-e2e-doc-gpu"))
 	AfterAll(e.DestroyContainer())
 })

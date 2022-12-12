@@ -45,13 +45,13 @@ var _ = Describe("bytecode hash cache target", func() {
 		testcase := "add-blank"
 		e := e2e.NewExample(e2e.BuildContextDirWithName(exampleName), testcase)
 		ctx := context.TODO()
-		e.BuildImage(false)()
+		e.BuildImage(false, "v1-add-blank")()
 		engine := e2e.GetEngine(ctx)
 		imageSum, err := engine.GetImage(ctx, e.Tag)
 		Expect(err).NotTo(HaveOccurred())
 		oldCreated := imageSum.Created
 		appendSomeToFile("testdata/" + exampleName + "/build.envd")
-		e.BuildImage(false)()
+		e.BuildImage(false, "v1-add-blank-file")()
 		imageSum, err = engine.GetImage(ctx, e.Tag)
 		Expect(err).NotTo(HaveOccurred())
 		newCreated := imageSum.Created

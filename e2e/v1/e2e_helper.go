@@ -17,6 +17,7 @@ package e2e
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -28,6 +29,7 @@ import (
 	"github.com/tensorchord/envd/pkg/envd"
 	ir "github.com/tensorchord/envd/pkg/lang/ir/v1"
 	"github.com/tensorchord/envd/pkg/types"
+	"github.com/tensorchord/envd/pkg/version"
 )
 
 func BuildContextDirWithName(name string) string {
@@ -38,7 +40,7 @@ func ResetEnvdApp() {
 	ir.DefaultGraph = ir.NewGraph()
 }
 
-func (e *Example) BuildImage(force bool) func() {
+func (e *Example) BuildImage(force bool, cache string) func() {
 	return func() {
 		logrus.Infof("building %s image in %s", e.Name, e.BuildContextPath)
 		args := []string{
@@ -47,6 +49,15 @@ func (e *Example) BuildImage(force bool) func() {
 		}
 		if force {
 			args = append(args, "--force")
+		}
+		mode := version.GetGhaBuildMode()
+		// only export cache when at safe mode for e2e test (TEST_CACHE_BOT set by Github Action)
+		if len(cache) != 0 && mode == version.GhaSafe {
+			cache_source := fmt.Sprintf("type=registry,ref=ghcr.io/envd-cache/e2e-test:%v", cache)
+			args = append(args, "--export-cache", cache_source, "--import-cache", cache_source)
+		} else if len(cache) != 0 && mode == version.GhaImport {
+			cache_source := fmt.Sprintf("type=registry,ref=ghcr.io/envd-cache/e2e-test:%v", cache)
+			args = append(args, "--import-cache", cache_source)
 		}
 		ResetEnvdApp()
 		err := e.app.Run(args)

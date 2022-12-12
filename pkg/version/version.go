@@ -39,7 +39,15 @@ var (
 	gitCommit       = ""                     // output from `git rev-parse HEAD`
 	gitTag          = ""                     // output from `git describe --exact-match --tags HEAD` (if clean tree state)
 	gitTreeState    = ""                     // determined from `git status --porcelain`. either 'clean' or 'dirty'
-	developmentFlag = "false"
+	developmentFlag = "false"                //
+	ghaBuildMode    = BuildRaw               // set by Github Action, import or export cache for e2e test
+)
+
+// `GhaSafe` (TEST_CACHE_BOT set by Github Action) for export/import cache, `GhaImport` for only import cache
+const (
+	BuildRaw  = "raw"
+	GhaSafe   = "safe"
+	GhaImport = "import"
 )
 
 // Version contains envd version information
@@ -100,6 +108,10 @@ func GetEnvdVersion() string {
 		}
 	}
 	return versionStr
+}
+
+func GetGhaBuildMode() string {
+	return ghaBuildMode
 }
 
 // GetVersion returns the version information
